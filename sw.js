@@ -1,0 +1,1 @@
+self.addEventListener('install',e=>{e.waitUntil(caches.open('tshiboy-shell-v1').then(c=>c.addAll(['/','/style.css','/app.mjs','/engine.mjs','/assets/avatar.png'])))});self.addEventListener('fetch',e=>{if(new URL(e.request.url).pathname.startsWith('/api/'))return;e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)))});

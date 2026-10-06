@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {openPaper,settle,stats} from './paper.mjs';
+const signal={status:'BUY',entry:100,sl:95,tp1:110,tp2:115,tp3:125,score:90};
+test('paper risk and TP1',()=>{const t=openPaper({signal,symbol:'XAUUSD',interval:'15min',balance:1000,riskPercent:1,candle:{time:'2026-10-01 10:00:00'}});assert.equal(t.riskUsd,10);assert.equal(t.units,2);const out=settle([t],'XAUUSD','15min',[{time:'2026-10-01 10:00:00',high:200,low:1},{time:'2026-10-01 10:15:00',high:111,low:99}]);assert.equal(out[0].status,'TP1');assert.equal(stats(out).pnl,20)});
+test('same candle SL wins ambiguity',()=>{const t=openPaper({signal,symbol:'XAUUSD',interval:'15min',balance:1000,riskPercent:1,candle:{time:'a'}});const out=settle([t],'XAUUSD','15min',[{time:'b',high:120,low:90}]);assert.equal(out[0].status,'STOPPED');assert.equal(out[0].pnlUsd,-10)});
+test('risk cap',()=>assert.throws(()=>openPaper({signal,symbol:'XAUUSD',interval:'15min',balance:1000,riskPercent:5,candle:{time:'a'}})));
